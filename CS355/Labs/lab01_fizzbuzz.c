@@ -1,8 +1,25 @@
 #include <stdio.h>
 
+int fizzbuzz(int);
+
 int main() {
-  int iInput = 0;
+  int input = 0;
   printf("Please enter an integer: ");
-  scanf("%f", &iInput);
+  scanf("%d", &input);
+  for(int i=0; i<input;i++) {
+    fizzbuzz(i);
+  }
 }
 
+int fizzbuzz(int x) {
+  if(x % 3 == 0) {
+    printf("Fizz");
+  }
+  if (x % 5 == 0) {
+    printf("Buzz");
+  }
+  else {
+    printf("%d",x);
+  }
+  printf("\n");
+}
