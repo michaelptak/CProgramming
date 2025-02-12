@@ -6,16 +6,27 @@ int main() {
   int input = 0;
   printf("Please enter an integer: ");
   scanf("%d", &input);
-  for(int i=0; i<input;i++) {
-    fizzbuzz(i);
+
+  if (input > 0) {
+    for(int i=0; i<=input;i++) {
+      fizzbuzz(i);
+    }
+  } 
+  else {
+    for(int i=0; input<=i;i--) {
+      fizzbuzz(i);
+    }
   }
 }
 
 int fizzbuzz(int x) {
   if(x % 3 == 0) {
     printf("Fizz");
+    if (x % 5 == 0) {
+      printf("Buzz");
+    }
   }
-  if (x % 5 == 0) {
+  else if (x % 5 == 0) {
     printf("Buzz");
   }
   else {
