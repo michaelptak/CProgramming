@@ -39,7 +39,7 @@ int main(){
 
   for(int i=0; i<3; i++) {
     read(intLoginFile, &currentLogin, sizeof(struct login));
-    printf("User name #%d: %s logged in at %.24s\n", i, currentLogin.user_name, 
+    printf("%s last logged in on %s on %.24s\n", currentLogin.user_name, currentLogin.terminal, 
       asctime(localtime(&currentLogin.time_stamp)));
   }
   close(intLoginFile);
