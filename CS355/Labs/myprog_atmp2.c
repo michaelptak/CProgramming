@@ -1,31 +1,26 @@
 #include <stdio.h>
 
-// Function to check if a character is a letter (A-Z or a-z)
-int is_letter(char c) {
-    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
-}
+int main(int ac, char *av[]) {
 
-int main(int argc, char *argv[]) {
-    // Loop through each argument
-    for (int i = 1; i < argc; i++) {
-        char filtered[100]; // Temporary array to store filtered characters
-        int len = 0;
-        
-        // Filter only letters from the argument
-        for (int j = 0; argv[i][j] != '\0'; j++) {
-            if (is_letter(argv[i][j])) {
-                filtered[len++] = argv[i][j];
-            }
+    for (int i = 1; i <ac; i++) {
+      char *str = av[i];
+      int index = 0;
+      char filtered[100]; // temp array stores only letters
+
+      for (int j=0; str[j] != '\0'; j++){
+        if ((str[j] >= 'a' && str[j] <= 'z') || (str[j] >= 'A' && str[j] <= 'Z')) {
+          filtered[index++] = str[j];
         }
-        
-        // Print the filtered string progressively
-        for (int k = 0; k < len; k++) {
-            for (int m = 0; m <= k; m++) {
-                putchar(filtered[m]);
-            }
-            putchar('\n');
+      }
+
+      // print fronm filtered string
+      for (int k=0; k < index; k++) {
+        for (int m =0; m <=k;m++) {
+          printf("%c", filtered[m]);
         }
+        printf("\n");
+      }
     }
-    
+
     return 0;
 }
