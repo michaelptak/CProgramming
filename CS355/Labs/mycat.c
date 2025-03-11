@@ -31,13 +31,12 @@ int main(int ac, char* av[]) {
     }
   }
 
-  if (ac == 1) {
+  if (optind >= ac) {
     printf("Usage: mycat [-ens] file1 [file2 ...]\n");
-  } else {
-    while (--ac) {
-      printf("%s\n", *++av);
-      do_cat(*av);
-    }
+  }
+  for (int i = optind; i < ac; i++) {
+    printf("Reading from file: %s\n", av[i]);
+    do_cat(av[i]);
   }
 
   return 0; 
@@ -57,10 +56,10 @@ void do_cat(char *filename) {
   while((numBytes=read(fd, buffer, sizeof(buffer))) > 0) {
     for(int i =0; i<numBytes; i++) {
       if (flagE && buffer[i] == '\n') {
-        printf("$\n");
-      } else {
-        printf("%c", buffer[i]);
+        printf("$");
       }
+      printf("%c", buffer[i]);
+      
 
 
     }
