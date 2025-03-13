@@ -52,19 +52,62 @@ void do_cat(char *filename) {
 
   char buffer[BUFFER_SIZE];
   int numBytes;
+  int lineNum = 1;
+  int atLineStart = 1; // flag to track if at start of line
+  int emptyLine = 1; //track if empty line
+  int prevLineEmpty = 0;// track if prev line empty'
 
-  while((numBytes=read(fd, buffer, sizeof(buffer))) > 0) {
-    for(int i =0; i<numBytes; i++) {
-      if (flagE && buffer[i] == '\n') {
-        printf("$");
-      }
-      printf("%c", buffer[i]);
-      
+  while((numBytes = read(fd, buffer, sizeof(buffer))) > 0) {
+    for(int i = 0; i < numBytes; i++) {
+      // Handle flag N and check for whitespace
+      if (atLineStart) {
+        // Check for emptyy line 
+        if (buffer[i] != ' ' && buffer[i] != '\t' && buffer[i] != '\r' && buffer[i] != '\n') {
+          emptyLine = 0;
+        }
 
+        if (flagN && (!flagS || !emptyLine || !prevLineEmpty)) {
+          printf("%2d ", lineNum++);
+        }
 
+        atLineStart = 0;
     }
 
-  }
+      // Check for windows line ending (\r\n)
+      if (buffer[i] == '\r' && i + 1 < numBytes && buffer[i + 1] == '\n') {
+        // Print if: S flag not set OR Line is not empty OR line is empty but previous not empty 
+        if (!flagS || !emptyLine || !prevLineEmpty) {
+          if (flagE) {
+            printf("$");
+          }
+          printf("\r\n");
+        }
+        
+        prevLineEmpty = emptyLine;
+        emptyLine = 1;             // assume next line is empty
+        atLineStart = 1;           
+        i++;    // skip over \n
+      }
 
+      // Check for unix line ending (\n)
+      else if (buffer[i] == '\n') {
+         if (!flagS || !emptyLine || !prevLineEmpty) {
+          if (flagE) {
+            printf("$");
+          }
+          printf("\n");
+        }
+        
+        prevLineEmpty = emptyLine;
+        emptyLine = 1;  
+        atLineStart = 1;      
+      }
+
+      // Regular character (only print if not skipping this line)
+      else if (!flagS || !emptyLine || !prevLineEmpty) {
+        printf("%c", buffer[i]);    
+      }
+    }
+  }
   close(fd);
 }
