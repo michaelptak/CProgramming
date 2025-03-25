@@ -49,33 +49,32 @@ void do_cat(char *filename) {
     perror("Error opening file");
     return;
   }
-
   char buffer[BUFFER_SIZE];
   int numBytes;
   int lineNum = 1;
   int atLineStart = 1; // flag to track if at start of line
   int emptyLine = 1; //track if empty line
-  int prevLineEmpty = 0;// track if prev line empty'
-
+  int prevLineEmpty = 0;// track if prev line empty
+  
   while((numBytes = read(fd, buffer, sizeof(buffer))) > 0) {
     for(int i = 0; i < numBytes; i++) {
-      // Handle flag N and check for whitespace
+      // Check if we're at the start of a line
       if (atLineStart) {
-        // Check for emptyy line 
+        // Check if the current character indicates a non-empty line
         if (buffer[i] != ' ' && buffer[i] != '\t' && buffer[i] != '\r' && buffer[i] != '\n') {
           emptyLine = 0;
         }
-
+        
+        // Print line number if -n flag is set and we're not skipping the line
         if (flagN && (!flagS || !emptyLine || !prevLineEmpty)) {
           printf("%2d ", lineNum++);
         }
-
         atLineStart = 0;
-    }
-
+      }
+      
       // Check for windows line ending (\r\n)
       if (buffer[i] == '\r' && i + 1 < numBytes && buffer[i + 1] == '\n') {
-        // Print if: S flag not set OR Line is not empty OR line is empty but previous not empty 
+        // Only print the line ending if we're not skipping this empty line
         if (!flagS || !emptyLine || !prevLineEmpty) {
           if (flagE) {
             printf("$");
@@ -88,10 +87,10 @@ void do_cat(char *filename) {
         atLineStart = 1;           
         i++;    // skip over \n
       }
-
       // Check for unix line ending (\n)
       else if (buffer[i] == '\n') {
-         if (!flagS || !emptyLine || !prevLineEmpty) {
+        // Only print the line ending if we're not skipping this empty line
+        if (!flagS || !emptyLine || !prevLineEmpty) {
           if (flagE) {
             printf("$");
           }
@@ -102,12 +101,19 @@ void do_cat(char *filename) {
         emptyLine = 1;  
         atLineStart = 1;      
       }
-
-      // Regular character (only print if not skipping this line)
-      else if (!flagS || !emptyLine || !prevLineEmpty) {
-        printf("%c", buffer[i]);    
+      // Regular character
+      else {
+        // Only print if we're not skipping this line
+        if (!flagS || !emptyLine || !prevLineEmpty) {
+          printf("%c", buffer[i]);
+        }
       }
     }
   }
+  
+  if (numBytes < 0) {
+    perror("Error reading file");
+  }
+  
   close(fd);
 }
