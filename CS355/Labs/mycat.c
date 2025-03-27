@@ -84,9 +84,9 @@ void do_cat(char *filename) {
         }
         
         prevLineEmpty = emptyLine;
-        emptyLine = 1;             // assume next line is empty
+        emptyLine = 1;  // assume next line is empty
         atLineStart = 1;           
-        i++;    // skip over \n
+        i++;  // skip over \n
       }
 
       // Check for unix line ending (\n)
