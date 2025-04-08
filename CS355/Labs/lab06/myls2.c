@@ -17,6 +17,44 @@ int compare_reverse_lexicographic(const void *a, const void *b) {
     return strcmp(*(const char **)b, *(const char **)a);
 }
 
+//Function to print entryies in columns
+void print_entries_in_columns(char **entries, int count) {
+  struct winsize wbuf;
+  int max_len = 0;
+
+  //get terminal width
+  if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &wbuf) == 1) {
+    perror("ioctl");
+    exit(1);
+  }
+
+  //determine longest filename
+  for (int i =0; i<count; i++) {
+    int len = strlen(entries[i]);
+    if(len > max_len) {
+      max_len = len;
+    }
+  }
+
+  max_len += 2; // spacing between columns
+  int cols = wbuf.ws_col / max_len;
+  if (cols == 0) {
+    cols = 1;
+  }
+  int rows = (count + cols -1) / cols;
+
+  for (int row = 0; row < rows; row++) {
+    for (int col = 0; col <cols; col++) {
+      int index = col * rows + row;
+      if (index < count) {
+        printf("%-*s", max_len, entries[index]);
+      }
+    }
+    printf("\n");
+  }
+}
+
+
 void do_ls(char *dirname, int show_hidden, int sort_type) {
     DIR *dir;
     struct dirent *entry;
@@ -50,9 +88,10 @@ void do_ls(char *dirname, int show_hidden, int sort_type) {
         qsort(entries, entry_count, sizeof(char *), compare_reverse_lexicographic);
     }
 
-    // Print entries
+    print_entries_in_columns(entries, entry_count);
+
+    // free memory
     for (int i = 0; i < entry_count; i++) {
-        printf("%s\n", entries[i]);
         free(entries[i]);
     }
 
